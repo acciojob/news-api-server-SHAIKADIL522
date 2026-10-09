@@ -28,7 +28,25 @@ app.get("/", (req, res) => {
   res.status(200).send("hello world!");
 });
 
-// your code here!
+app.get("/newsFeeds", async (req, res) => {
+  const limitParam = Number(req.query.limit);
+  const offsetParam = Number(req.query.offset);
+
+  const limit =
+    Number.isInteger(limitParam) && limitParam > 0
+      ? limitParam
+      : onePageArticleCount; // default 10
+  const offset =
+    Number.isInteger(offsetParam) && offsetParam >= 0 ? offsetParam : 0;
+
+  try {
+    const articles = await newsArticleModel.find({}).skip(offset).limit(limit);
+    res.status(200).json(articles);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json([]);
+  }
+});
 
 // ==end==
 
